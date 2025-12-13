@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/images/icon.png">
+<link rel="apple-touch-icon" href="assets/images/icon.png">
+  <title>nWave - Web Music App</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="bg-blobs">
+    <div class="blob"></div>
+    <div class="blob blob2"></div>
+  </div>
+
+  <div class="app-shell" id="appShell">
+    <!-- TOP NAV -->
+    <header class="top-nav">
+      <div class="logo-img">
+        <img src="assets/images/logo.png" alt="nWave logo">
+      </div>
+    </header>
+
+    <!-- Left Side -->
+    <section class="left-column">
+      <div class="hero-card">
+        <div class="hero-copy">
+          <div class="eyebrow">Trending new hits</div>
+          <div class="hero-title" id="heroTitle">In My Feelings</div>
+          <div class="hero-sub" id="heroSubtitle">Curated for deep-focus coding, night drives, and everything in between.</div>
+          <div class="hero-actions">
+            <button class="primary-btn" style="width: auto" id="heroPlayBtn">Listen</button>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="vinyl-wrapper">
+            <div class="floating-vinyl"></div>
+            <!-- notes fixed at left side of wrapper -->
+            <span class="note note-1">♪</span>
+            <span class="note note-2">♫</span>
+            <span class="note note-3">♬</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAG STRIP -->
+      <div class="tag-strip">
+        <div class="tag-chip active" data-filter="all">All</div>
+        <div class="tag-chip" data-filter="indie-pop">Indie Pop</div>
+        <div class="tag-chip" data-filter="lofi">LoFi</div>
+        <div class="tag-chip" data-filter="night">Night Drives</div>
+        <div class="tag-chip" data-filter="romantic">Romantic</div>
+        <div class="tag-chip" data-filter="party">Party</div>
+      </div>
+
+      <!-- FILTERED PLAYLIST LEFT -->
+      <div class="playlist-card">
+        <div class="playlist-header-row">
+          <span class="playlist-title-label">Discover tracks</span>
+          <span class="playlist-subtitle" id="playlistSubtitle">Showing all moods</span>
+        </div>
+        <div class="playlist-body" id="playlistList"></div>
+      </div>
+    </section>
+
+    <!-- Right Side -->
+    <aside class="right-column">
+      <div class="queue-card">
+        <div class="queue-header-row">
+          <span class="queue-title-label">Up next queue</span>
+          <button class="queue-autoplay-pill">Autoplay</button>
+        </div>
+        <!-- fixed-height scrollable list -->
+        <div class="queue-body" id="queueList"></div>
+      </div>
+
+      <!-- mini player -->
+      <div class="mini-player">
+        <div class="mini-player-top">
+          <div class="mini-player-info">
+            <div class="mini-player-title" id="miniTitle">In My Feelings</div>
+            <div class="mini-player-artist" id="miniArtist">Nova & The City Lights</div>
+            <input type="range" id="seekBar" class="seek-slider" min="0" max="100" value="0">
+          </div>
+        </div>
+        <div class="mini-player-bottom">
+          <div class="mini-disk-wrapper">
+            <div id="miniDisk" class="mini-player-disk"></div>
+              <!-- notes OUTSIDE disk so they don't rotate -->
+            <span class="mini-note note-a">♪</span>
+            <span class="mini-note note-b">♫</span>
+            <span class="mini-note note-c">♩</span>
+          </div>
+          <div class="mini-player-controls">
+            <button class="mini-ctrl-btn" id="miniPrev">◀</button>
+            <button class="mini-ctrl-btn main" id="miniPlay">▶</button>
+            <button class="mini-ctrl-btn" id="miniNext">▶</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="bottom-nav" role="navigation" aria-label="bottom navigation">
+    <!-- Capsule with two circle buttons -->
+    <div class="nav-ellipse">
+      <button class="nav-circle nav-circle-theme" id="themeToggle" aria-label="Toggle theme">☀️</button>
+      <a href="https://instagram.com/socket.dev" target="_blank" class="nav-circle nav-circle-insta">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+          <line x1="17.5" y1="16.5" x2="17.51" y2="16.5"></line>
+        </svg>
+      </a>
+    </div>
+    
+    <!-- Search pill -->
+    <button class="nav-pill nav-pill-outline">
+      <div class="search-field">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="globalSearch" placeholder="Search songs, artists, moods...">
+      </div>
+    </button>
+    
+    <!-- Dev support -->
+    <button class="nav-pill nav-pill-dev">Dev Support</button>
+    <!-- Small Dev Popup - Bottom Left -->
+    <div id="devSupport" class="dev-support">
+      <div class="dev-panel">
+        <div class="dev-header">
+          <h4>👨‍💻 Dev Support</h4>
+          <span class="dev-close">×</span>
+        </div>
+        <div class="dev-info">
+        <strong>nWave Developer</strong>
+        <p>BCA Student | learning development</p>
+      </div>
+      <form id="devForm" action="https://formsubmit.co/nsgcreation365@gmail.com" method="POST">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_subject" value="nWave Feedback Received">
+        <input type="text" id="userName" name="name" required placeholder="name">
+        <input type="email" id="userEmail" name="email" placeholder="email">
+        <textarea id="message" name="message" placeholder="message" required></textarea>
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- YT PLAYER(IFrame) -->
+  <div id="yt-player" style="position:absolute;left:-9999px;width:1px;height:1px"></div>
+  <script async src="https://www.youtube.com/iframe_api"></script>
+  <script src="js/index.js" defer></script>
+</body>
+</html>
