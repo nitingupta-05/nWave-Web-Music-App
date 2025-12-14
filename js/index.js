@@ -1,3 +1,7 @@
+/* BACKEND BASE URL (Render) */
+const API_BASE = "https://nwave-backend.onrender.com"; 
+// ^ replace with your exact Render backend URL
+
 /*THEME TOGGLE - FIXED (Runs FIRST)*/
 const themeBtn = document.getElementById("themeToggle");
 if (themeBtn) {
@@ -25,6 +29,7 @@ if (themeBtn) {
   };
 }
 
+
 // Player variables
 let ytPlayer = null;
 let audioPlayer = null;
@@ -36,8 +41,10 @@ let activeList = 'left';
 let isPlaying = false;
 let searchTimeout = null;
 
+
 // SINGLE DOMContentLoaded -
 document.addEventListener('DOMContentLoaded', initPlayer);
+
 
 function initPlayer() {
   console.log('🎵 nWave: FULLY LOADED');
@@ -60,11 +67,13 @@ function initPlayer() {
     globalSearch: document.getElementById('globalSearch')
   };
 
+
   // DEV SUPPORT MODAL - PRESERVED ✅
   const devBtn = document.querySelector('.nav-pill-dev');
   const devSupport = document.getElementById('devSupport');
   const devClose = devSupport?.querySelector('.dev-close');
   const devForm = document.getElementById('devForm');
+
 
   if (devBtn) {
     devBtn.onclick = () => devSupport.classList.add('active');
@@ -79,48 +88,53 @@ function initPlayer() {
     }
   });
 
+
   // YouTube API
   loadYouTubeAPI();
+
 
   // Audio events
   audioPlayer.addEventListener('play', () => { if (currentPlayer === 'audio') updatePlayerState(true); });
   audioPlayer.addEventListener('pause', () => { if (currentPlayer === 'audio') updatePlayerState(false); });
   audioPlayer.addEventListener('ended', () => {
-  console.log('🎵 Audio ended → Random next');
-  randomTrack();
-});
+    console.log('🎵 Audio ended → Random next');
+    randomTrack();
+  });
   audioPlayer.addEventListener('timeupdate', updateSeekBar);
+
 
   // Load playlists
   loadInitialPlaylists();
 
-// 🔥 TAG FILTER → LOAD BOTH SIDES
-document.querySelectorAll(".tag-chip").forEach(btn => {
-  btn.addEventListener("click", async () => {
 
-    // UI active state
-    document.querySelectorAll(".tag-chip").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
+  // 🔥 TAG FILTER → LOAD BOTH SIDES
+  document.querySelectorAll(".tag-chip").forEach(btn => {
+    btn.addEventListener("click", async () => {
 
-    const tag = btn.dataset.filter;
-    console.log("🎧 Tag selected:", tag);
+      // UI active state
+      document.querySelectorAll(".tag-chip").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
 
-    if (tag === "all") {
-      loadLeftPlaylist();     // YouTube default
-      loadRightPlaylist();    // Jamendo default
-      return;
-    }
+      const tag = btn.dataset.filter;
+      console.log("🎧 Tag selected:", tag);
 
-    // Load left → YouTube tag
-    loadLeftPlaylistByTag(tag);
+      if (tag === "all") {
+        loadLeftPlaylist();      // YouTube default
+        loadRightPlaylist();     // Jamendo default
+        return;
+      }
 
-    // Load right → Jamendo tag
-    loadRightPlaylistByTag(tag);
+      // Load left → YouTube tag
+      loadLeftPlaylistByTag(tag);
+
+      // Load right → Jamendo tag
+      loadRightPlaylistByTag(tag);
+    });
   });
-});
 
 
-  // 🔥 SEARCH → LEFT
+
+  // 🔥 SEARCH → LEFT (now using backend)
   elements.globalSearch.addEventListener('input', (e) => {
     const query = e.target.value.trim();
     clearTimeout(searchTimeout);
@@ -131,7 +145,7 @@ document.querySelectorAll(".tag-chip").forEach(btn => {
       }
       console.log('🔍 Searching:', query);
       try {
-        const res = await fetch(`http://localhost:4000/api/left-search?q=${encodeURIComponent(query)}`);
+        const res = await fetch(`${API_BASE}/api/left-search?q=${encodeURIComponent(query)}`);
         const data = await res.json();
         leftTracks = data.tracks;
         renderTracks(elements.playlistList, leftTracks, 'left');
@@ -142,6 +156,7 @@ document.querySelectorAll(".tag-chip").forEach(btn => {
     }, 400);
   });
 
+
   // Controls
   elements.miniPlay.onclick = togglePlayPause;
   elements.miniNext.onclick = nextTrack;
@@ -149,6 +164,7 @@ document.querySelectorAll(".tag-chip").forEach(btn => {
   elements.seekBar.oninput = handleSeek;
   setInterval(updateSeekBar, 500);
 }
+
 
 // load youtube api
 function loadYouTubeAPI() {
@@ -171,10 +187,9 @@ function loadYouTubeAPI() {
             case 1: updatePlayerState(true); break;
             case 2: updatePlayerState(false); break;
             case 0:
-              case 0:
-  console.log('🎵 YouTube ended → Random next');
-  randomTrack();
-  break;
+              console.log('🎵 YouTube ended → Random next');
+              randomTrack();
+              break;
           }
         }
       }
@@ -182,25 +197,28 @@ function loadYouTubeAPI() {
   };
 }
 
+
 async function loadInitialPlaylists() {
   await loadLeftPlaylist();
   await loadRightPlaylist();
   console.log('Playlists ready - Click to start!');
 }
 
+
 async function loadLeftPlaylist() {
   try {
-    const res = await fetch('http://localhost:4000/api/left-playlist');
+    const res = await fetch(`${API_BASE}/api/left-playlist`);
     const data = await res.json();
     leftTracks = data.tracks;
     renderTracks(document.getElementById('playlistList'), leftTracks, 'left');
     document.getElementById('playlistSubtitle').textContent = `${leftTracks.length} tracks`;
-  } catch (e) { console.error('Left failed'); }
+  } catch (e) { console.error('Left failed', e); }
 }
+
 
 async function loadLeftPlaylistByTag(tag) {
   try {
-    const res = await fetch(`http://localhost:4000/api/left-playlist-tag?tag=${encodeURIComponent(tag)}`);
+    const res = await fetch(`${API_BASE}/api/left-playlist-tag?tag=${encodeURIComponent(tag)}`);
     const data = await res.json();
     leftTracks = data.tracks;
     renderTracks(document.getElementById('playlistList'), leftTracks, 'left');
@@ -210,18 +228,20 @@ async function loadLeftPlaylistByTag(tag) {
   }
 }
 
+
 async function loadRightPlaylist() {
   try {
-    const res = await fetch('http://localhost:4000/api/right-playlist');
+    const res = await fetch(`${API_BASE}/api/right-playlist`);
     const data = await res.json();
     rightTracks = data.tracks;
     renderTracks(document.getElementById('queueList'), rightTracks, 'right');
-  } catch (e) { console.error('Right failed'); }
+  } catch (e) { console.error('Right failed', e); }
 }
+
 
 async function loadRightPlaylistByTag(tag) {
   try {
-    const res = await fetch(`http://localhost:4000/api/right-playlist-tag?tag=${encodeURIComponent(tag)}`);
+    const res = await fetch(`${API_BASE}/api/right-playlist-tag?tag=${encodeURIComponent(tag)}`);
     const data = await res.json();
     rightTracks = data.tracks;
     renderTracks(document.getElementById('queueList'), rightTracks, 'right');
@@ -229,6 +249,7 @@ async function loadRightPlaylistByTag(tag) {
     console.error('Right by tag failed:', err);
   }
 }
+
 
 
 function renderTracks(container, tracks, side) {
@@ -257,6 +278,7 @@ function renderTracks(container, tracks, side) {
   });
 }
 
+
 function loadTrackFromList(autoPlay = false) {
   const list = activeList === 'left' ? leftTracks : rightTracks;
   const track = list[currentIndex];
@@ -282,6 +304,7 @@ function loadTrackFromList(autoPlay = false) {
   }
 }
 
+
 function stopCurrentPlayer() {
   if (currentPlayer === 'yt' && ytPlayer) ytPlayer.stopVideo();
   if (currentPlayer === 'audio' && audioPlayer) {
@@ -291,6 +314,7 @@ function stopCurrentPlayer() {
   updatePlayerState(false);
 }
 
+
 function updatePlayerState(playing) {
   isPlaying = playing;
   const miniPlay = document.getElementById('miniPlay');
@@ -298,6 +322,7 @@ function updatePlayerState(playing) {
   miniPlay.innerHTML = playing ? '⏸' : '▶';
   miniDisk.classList.toggle('playing', playing);
 }
+
 
 function togglePlayPause() {
   if (currentPlayer === 'yt' && ytPlayer && playerReady) {
@@ -309,6 +334,7 @@ function togglePlayPause() {
     else audioPlayer.play().catch(e => console.warn(e));
   }
 }
+
 
 function handleSeek() {
   const seekBar = document.getElementById('seekBar');
@@ -322,6 +348,7 @@ function handleSeek() {
     if (duration) audioPlayer.currentTime = progress / 100 * duration;
   }
 }
+
 
 function updateSeekBar() {
   let duration = 0, current = 0;
@@ -339,17 +366,20 @@ function updateSeekBar() {
   }
 }
 
+
 function nextTrack() {
   const list = activeList === 'left' ? leftTracks : rightTracks;
   currentIndex = (currentIndex + 1) % list.length;
   loadTrackFromList(true);
 }
 
+
 function prevTrack() {
   const list = activeList === 'left' ? leftTracks : rightTracks;
   currentIndex = currentIndex === 0 ? list.length - 1 : currentIndex - 1;
   loadTrackFromList(true);
 }
+
 
 // RANDOM NEXT TRACK
 // FIXED RANDOM TRACK FUNCTION
@@ -369,6 +399,7 @@ function randomTrack() {
 
   loadTrackFromList(true); // <-- THE REAL player loader
 }
+
 
 function formatTime(s) {
   return `${Math.floor(s/60).toString().padStart(2,'0')}:${Math.floor(s%60).toString().padStart(2,'0')}`;
