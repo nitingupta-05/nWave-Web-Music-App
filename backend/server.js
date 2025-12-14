@@ -10,8 +10,8 @@ app.use(cors());
 app.use(express.json());
 
 const PORT = 4000;
-const YT_KEY = "AIzaSyAFe5iGe-liTQROVhApJjx4ZvJwGgmUsP8";
-const JAMENDO_ID = process.env.JAMENDO_CLIENT_ID || "7a775b73";
+const YT_KEY = process.env.YOUTUBE_API_KEY;
+const JAMENDO_ID = process.env.JAMENDO_CLIENT_ID;
 
 const cache = new Map();
 const CACHE_TIME = 10 * 60 * 1000;
